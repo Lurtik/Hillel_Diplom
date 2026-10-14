@@ -9,6 +9,9 @@ GENDER_WORDS = {
 class Person:
 
     def __init__(self, name, birth, gender, surname="", patronymic = "", death = None):
+        if not name.strip():
+            raise ValueError("Name is required")
+
         if gender not in ["m", "f"]:
             raise ValueError("Gender must be 'f' or 'm'")
 
@@ -19,11 +22,11 @@ class Person:
             if parse_date(birth) > parse_date(death):
                 raise ValueError("Death date must be after birth date")
 
-        self.name = name
+        self.name = name.strip()
         self.birth = parse_date(birth)
         self.gender = gender
-        self.surname = surname
-        self.patronymic = patronymic
+        self.surname = surname.strip()
+        self.patronymic = patronymic.strip()
         self.death = parse_date(death) if death else None
 
     def full_name(self):
@@ -42,6 +45,26 @@ class Person:
             text += f" {words['died']}: {self.death.strftime('%d.%m.%Y')}."
         return text
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "surname": self.surname,
+            "patronymic": self.patronymic,
+            "birth": self.birth.strftime('%d.%m.%Y'),
+            "death": self.death.strftime('%d.%m.%Y') if self.death else None,
+            "gender": self.gender,
+        }
+
+    @staticmethod
+    def from_dict(d):
+        return Person(
+            name=d["name"],
+            birth=d["birth"],
+            gender=d["gender"],
+            surname=d["surname"],
+            patronymic=d["patronymic"],
+            death=d["death"] if d["death"] else None,
+        )
 
 def parse_date(text):
     parts = re.split(r"[.\s/\-]+", text.strip())
@@ -62,3 +85,4 @@ def years_word(n):
     if 2 <= n % 10 <= 4 and not (12 <= n % 100 <= 14):
         return "роки"
     return "років"
+
