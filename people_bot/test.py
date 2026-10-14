@@ -12,3 +12,13 @@ print(len(db.search("євген")))        # должно быть 3
 print(len(db.search("євген крут")))   # должно быть 1
 print(len(db.search("ЄВГЕН")))        # должно быть 3
 print(len(db.search("xyz")))          # должно быть 0
+
+db.save("test.json")
+
+db2 = PeopleDB()
+print(len(db2.people))      # 0, это новая пустая коробка
+db2.load("test.json")
+print(len(db2.people))      # 3
+
+for p in db2.search("євген"):
+    print(p)
